@@ -1,0 +1,12 @@
+<RCC>
+    <qresource prefix="/">
+        <file>ressources/images/home.png</file>
+        <file>ressources/images/commande.png</file>
+        <file>ressources/images/fournisseur.png</file>
+        <file>ressources/images/ventes.png</file>
+        <file>ressources/images/client.png</file>
+        <file>ressources/images/pdf.png</file>
+        <file>ressources/images/edit_dark.png</file>
+        <file>ressources/images/edit_light.png</file>
+    </qresource>
+</RCC>
