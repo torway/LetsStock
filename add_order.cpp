@@ -129,7 +129,7 @@ void add_order::on_comboBox_vendor_currentTextChanged()
                 {
                     QByteArray data = articles.value(11).toByteArray();
                     QPixmap *mpixmap = new QPixmap();
-                    mpixmap->loadFromData(data,"JPG");
+                    mpixmap->loadFromData(data);
                     iconImg.addPixmap(*mpixmap);
                 }
                 art->setIcon(1, iconImg);
@@ -309,7 +309,7 @@ void add_order::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
         {
             QByteArray data = image.value(0).toByteArray();
             QPixmap *mpixmap = new QPixmap();
-            mpixmap->loadFromData(data,"JPG");
+            mpixmap->loadFromData(data);
             ourLabel *labelImg = new ourLabel(*mpixmap);
             labelImg->setWindowModality(Qt::ApplicationModal);
             labelImg->show();

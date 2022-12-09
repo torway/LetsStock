@@ -129,7 +129,7 @@ void add_article::on_pushButton_addImg_clicked()
         IMGInByteArray = file.readAll();
 
         QPixmap *pix = new QPixmap();
-        pix->loadFromData(IMGInByteArray,"JPG");
+        pix->loadFromData(IMGInByteArray);
         QPixmap newPix = pix->scaledToHeight(32);
 
         QBuffer buffer(&IMGMinInByteArray);

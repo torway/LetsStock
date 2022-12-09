@@ -85,7 +85,7 @@ void add_sell::actu_articles()
             {
                 QByteArray data = articles.value(11).toByteArray();
                 QPixmap *mpixmap = new QPixmap();
-                mpixmap->loadFromData(data,"JPG");
+                mpixmap->loadFromData(data);
                 iconImg.addPixmap(*mpixmap);
             }
             art->setIcon(1, iconImg);
@@ -204,8 +204,8 @@ void add_sell::on_pushButton_add_clicked()
 
         if(commande == "Ajouter")
         {
-            QSqlQuery ajouter("INSERT INTO Vente (id_client, date, montant, articles) VALUES ('"+QString::number(clients.at(ui->comboBox_client->currentIndex()))+"','"+ui->dateEdit->date().toString("yyyyMMdd")+"'"
-                              ",'"+ui->label_montant->text().replace(" €","")+"','"+articles+"');");
+            QSqlQuery ajouter("INSERT INTO Vente (id_client, date, montant, articles, commentaire) VALUES ('"+QString::number(clients.at(ui->comboBox_client->currentIndex()))+"','"+ui->dateEdit->date().toString("yyyyMMdd")+"'"
+                              ",'"+ui->label_montant->text().replace(" €","")+"','"+articles+"','"+ui->lineEdit_commentaire->text().replace("'","''")+"');");
 
             QMessageBox::information(this, tr("Vente ajoutée"), tr("La vente a bien été ajoutée."), tr("Fermer"));
         }
@@ -215,36 +215,19 @@ void add_sell::on_pushButton_add_clicked()
             QSqlQuery updates("SELECT * FROM Vente WHERE id_vente='"+ui->label_id->text()+"'");
             while(updates.next())
             {
-                QStringList articles = updates.value(4).toString().split(";");
                 QString article;
-                if(updates.value(4).toString() != "")  foreach(article, articles)
+                if(updates.value(4).toString() != "")
                 {
-                    QSqlQuery update("UPDATE Articles SET quantité=quantité+'"+article.split(":").at(0)+"' WHERE id_article='"+article.split(":").at(1)+"'");
-                    QSqlQuery update2("UPDATE Articles SET total_vente=total_vente-'"+QString::number(article.split(":").at(0).toDouble()*article.split(":").at(2).toDouble())+"' WHERE id_article='"+article.split(":").at(1)+"'");
-                }
-            }
-
-            //Rajout
-            QString articles;
-            for(int i = 0; i < ui->treeWidget->topLevelItemCount(); i++)
-            {
-                for(int j = 0; j < ui->treeWidget->topLevelItem(i)->childCount(); j++)
-                {
-                    QSpinBox *spin = qobject_cast<QSpinBox*>(ui->treeWidget->itemWidget(ui->treeWidget->topLevelItem(i)->child(j), 0));
-                    QDoubleSpinBox *doubleSpin = qobject_cast<QDoubleSpinBox*>(ui->treeWidget->itemWidget(ui->treeWidget->topLevelItem(i)->child(j), 6));
-                    if(spin->value() != 0)
+                    foreach(article, updates.value(4).toString().split(";"))
                     {
-                        if(!articles.isEmpty()) articles.append(";");
-                        articles.append(QString::number(spin->value())+":"+ui->treeWidget->topLevelItem(i)->child(j)->text(8)+":"+QString::number(doubleSpin->value()));
-
-                        QSqlQuery update("UPDATE Articles SET quantité=quantité-'"+QString::number(spin->value())+"' WHERE id_article='"+ui->treeWidget->topLevelItem(i)->child(j)->text(8)+"'");
-                        QSqlQuery update2("UPDATE Articles SET total_vente=total_vente+'"+QString::number(spin->value()*doubleSpin->value())+"' WHERE id_article='"+ui->treeWidget->topLevelItem(i)->child(j)->text(8)+"'");
+                        QSqlQuery update("UPDATE Articles SET quantité=quantité+'"+article.split(":").at(0)+"' WHERE id_article='"+article.split(":").at(1)+"'");
+                        QSqlQuery update2("UPDATE Articles SET total_vente=total_vente-'"+QString::number(article.split(":").at(0).toDouble()*article.split(":").at(2).toDouble())+"' WHERE id_article='"+article.split(":").at(1)+"'");
                     }
                 }
             }
 
             QSqlQuery ajouter("UPDATE Vente SET id_client='"+QString::number(clients.at(ui->comboBox_client->currentIndex()))+"', date='"+ui->dateEdit->date().toString("yyyyMMdd")+"', montant='"+ui->label_montant->text().replace(" €","")+"'"
-                              ", articles='"+articles+"' WHERE id_vente='"+ui->label_id->text()+"'");
+                              ", articles='"+articles+"', commentaire='"+ui->lineEdit_commentaire->text().replace("'","''")+"' WHERE id_vente='"+ui->label_id->text()+"'");
 
             QMessageBox::information(this, tr("Vente modifiée"), tr("La vente a bien été modifiée."), tr("Fermer"));
         }
@@ -323,7 +306,7 @@ void add_sell::on_treeWidget_itemClicked(QTreeWidgetItem *item, int column)
         {
             QByteArray data = image.value(0).toByteArray();
             QPixmap *mpixmap = new QPixmap();
-            mpixmap->loadFromData(data,"JPG");
+            mpixmap->loadFromData(data);
             ourLabel *labelImg = new ourLabel(*mpixmap);
             labelImg->setWindowModality(Qt::ApplicationModal);
             labelImg->show();

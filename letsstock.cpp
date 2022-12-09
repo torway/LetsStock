@@ -117,7 +117,7 @@ void LetsStock::database()
         QSqlQuery articles("CREATE TABLE \"Articles\" (\"id_article\" INTEGER NOT NULL,\"id_fournisseur\" INTEGER NOT NULL,\"ref\" TEXT NOT NULL,\"categorie\" TEXT NOT NULL,\"nom\" TEXT NOT NULL,\"quantité\" DOUBLE NOT NULL,\"montant_achat\" DOUBLE NOT NULL,\"montant_vente\" DOUBLE NOT NULL,\"image\" BLOB,\"total_achat\" DOUBLE NOT NULL,\"total_vente\" DOUBLE NOT NULL,\"image_min\" BLOB, PRIMARY KEY(\"id_article\" AUTOINCREMENT));");
         QSqlQuery categories("CREATE TABLE \"Catégorie\" (\"id_cat\" INTEGER NOT NULL,\"nom\" TEXT NOT NULL, PRIMARY KEY(\"id_cat\" AUTOINCREMENT))");
         QSqlQuery clients("CREATE TABLE \"Client\" (\"id_client\" INTEGER NOT NULL,\"prenom\" TEXT,\"nom\" TEXT NOT NULL, PRIMARY KEY(\"id_client\" AUTOINCREMENT);");
-        QSqlQuery ventes("CREATE TABLE \"Vente\" (\"id_vente\" INTEGER NOT NULL,\"id_client\" INTEGER NOT NULL,\"date\" TEXT NOT NULL,\"montant\" DOUBLE NOT NULL,\"articles\" TEXT NOT NULL,PRIMARY KEY(\"id_vente\" AUTOINCREMENT))");
+        QSqlQuery ventes("CREATE TABLE \"Vente\" (\"id_vente\" INTEGER NOT NULL,\"id_client\" INTEGER NOT NULL,\"date\" TEXT NOT NULL,\"montant\" DOUBLE NOT NULL,\"articles\" TEXT NOT NULL,\"commentaire\" TEXT, PRIMARY KEY(\"id_vente\" AUTOINCREMENT))");
     }
     else
     {
@@ -137,36 +137,6 @@ void LetsStock::on_pushButton_saveDB_clicked()
 
 void LetsStock::on_actionUpdate_triggered()
 {
-    QDir srcDir = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-    srcDir.cdUp();
-    QString src = srcDir.path()+"/LithoStock";
-    qDebug() << src;
-    QString dst = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
-    QDir dir(src);
-    if (! dir.exists())
-        return;
-
-    foreach (QString d, dir.entryList(QDir::Dirs | QDir::NoDotAndDotDot)) {
-        QString dst_path = dst + QDir::separator() + d;
-        dir.mkpath(dst_path);
-        if (QFile::exists(dst_path))
-            QFile::remove(dst_path);
-
-        QFile::copy(src+ QDir::separator() + d, dst_path);
-    }
-
-    foreach (QString f, dir.entryList(QDir::Files)) {
-        if (QFile::exists(dst + QDir::separator() + f))
-            QFile::remove(dst + QDir::separator() + f);
-
-        QFile::copy(src + QDir::separator() + f, dst + QDir::separator() + f);
-    }
-
-    database();
-
-    QSqlQuery update("ALTER TABLE Articles ADD image_min BLOB");
-
     QSqlQuery image("SELECT id_article,image FROM Articles");
     while(image.next())
     {
@@ -174,7 +144,7 @@ void LetsStock::on_actionUpdate_triggered()
         {
             QByteArray data = image.value(1).toByteArray();
             QPixmap *mpixmap = new QPixmap();
-            mpixmap->loadFromData(data,"JPG");
+            mpixmap->loadFromData(data);
 
             QPixmap newPix = mpixmap->scaledToHeight(32);
 
@@ -283,7 +253,7 @@ void LetsStock::on_pushButton_stock_clicked()
             {
                 QByteArray data = articles.value(2).toByteArray();
                 QPixmap *mpixmap = new QPixmap();
-                mpixmap->loadFromData(data,"JPG");
+                mpixmap->loadFromData(data);
                 iconImg.addPixmap(mpixmap->scaledToHeight(128,Qt::SmoothTransformation));
             }
             art->setIcon(1, iconImg);
@@ -387,7 +357,7 @@ void LetsStock::on_treeWidget_stock_itemClicked(QTreeWidgetItem *item, int colum
         {
             QByteArray data = image.value(0).toByteArray();
             QPixmap *mpixmap = new QPixmap();
-            mpixmap->loadFromData(data,"JPG");
+            mpixmap->loadFromData(data);
             ourLabel *labelImg = new ourLabel(*mpixmap);
             labelImg->setWindowModality(Qt::ApplicationModal);
             labelImg->show();
@@ -488,7 +458,7 @@ void LetsStock::on_pushButton_stats_clicked()
     {
         set->append(CA.value(1).toDouble());
         series->append(set);
-        statsList.append(QDate::fromString(CA.value(0).toString(),"yyyyMM").toString("MMM yyyy"));
+        statsList.append(locale().toString(QDate::fromString(CA.value(0).toString(),"yyyyMM"),"MMM yyyy"));
     }
 
     series->setLabelsVisible(true);
@@ -736,7 +706,7 @@ void LetsStock::on_pushButton_order_clicked()
                     {
                         QByteArray data = nomArticle.value(1).toByteArray();
                         QPixmap *mpixmap = new QPixmap();
-                        mpixmap->loadFromData(data,"JPG");
+                        mpixmap->loadFromData(data);
                         iconImg.addPixmap(*mpixmap);
                     }
                     art->setIcon(2, iconImg);
@@ -838,7 +808,7 @@ void LetsStock::on_treeWidget_order_itemClicked(QTreeWidgetItem *item, int colum
         {
             QByteArray data = image.value(0).toByteArray();
             QPixmap *mpixmap = new QPixmap();
-            mpixmap->loadFromData(data,"JPG");
+            mpixmap->loadFromData(data);
             ourLabel *labelImg = new ourLabel(*mpixmap);
             labelImg->setWindowModality(Qt::ApplicationModal);
             labelImg->show();
@@ -1007,37 +977,42 @@ void LetsStock::actu_sell()
             client->setText(3, QDate::fromString(affichage.value(2).toString(),"yyyyMMdd").toString("ddd dd MMM yyyy"));
             client->setText(4, QString::number(affichage.value(3).toDouble(),'f',2)+" €");
             client->setText(5, affichage.value(0).toString());
+            client->setText(2, affichage.value(5).toString());
 
             QStringList articles = affichage.value(4).toString().split(";");
             QString article;
-            if(affichage.value(4).toString() != "") foreach(article, articles)
+            if(affichage.value(4).toString() != "")
             {
-                QTreeWidgetItem *art = new QTreeWidgetItem();
-
-                art->setText(1, article.split(":").at(0));
-                art->setText(4, "       "+QString::number(article.split(":").at(0).toDouble() * article.split(":").at(2).toDouble(),'f',2)+" €");
-                art->setText(6, article.split(":").at(1));
-
-                QSqlQuery nomArticle("SELECT nom,id_fournisseur,image_min FROM Articles WHERE id_article='"+article.split(":").at(1)+"'");
-                if(nomArticle.next())
+                foreach(article, articles)
                 {
-                    QIcon iconImg;
-                    if(!nomArticle.value(2).toByteArray().isNull())
+                    QTreeWidgetItem *art = new QTreeWidgetItem();
+
+                    art->setText(1, article.split(":").at(0));
+                    art->setText(4, "       "+QString::number(article.split(":").at(0).toDouble() * article.split(":").at(2).toDouble(),'f',2)+" €");
+                    art->setText(6, article.split(":").at(1));
+
+                    QSqlQuery nomArticle("SELECT nom,id_fournisseur,image_min FROM Articles WHERE id_article='"+article.split(":").at(1)+"'");
+                    if(nomArticle.next())
                     {
-                        QByteArray data = nomArticle.value(2).toByteArray();
-                        QPixmap *mpixmap = new QPixmap();
-                        mpixmap->loadFromData(data,"JPG");
-                        iconImg.addPixmap(*mpixmap);
+                        QIcon iconImg;
+                        if(!nomArticle.value(2).toByteArray().isNull())
+                        {
+                            QByteArray data = nomArticle.value(2).toByteArray();
+                            QPixmap *mpixmap = new QPixmap();
+                            mpixmap->loadFromData(data);
+                            iconImg.addPixmap(*mpixmap);
+                        }
+                        art->setIcon(2, iconImg);
+
+                        QSqlQuery nomVendor("SELECT nom FROM Fournisseur WHERE id_vendor='"+nomArticle.value(1).toString()+"'");
+                        if(nomVendor.next()) art->setText(2, nomArticle.value(0).toString()+" ["+nomVendor.value(0).toString()+"]");
+
+                        art->setText(5, affichage.value(0).toString());
                     }
-                    art->setIcon(2, iconImg);
 
-                    QSqlQuery nomVendor("SELECT nom FROM Fournisseur WHERE id_vendor='"+nomArticle.value(1).toString()+"'");
-                    if(nomVendor.next()) art->setText(2, nomArticle.value(0).toString()+" ["+nomVendor.value(0).toString()+"]");
 
-                    art->setText(5, affichage.value(0).toString());
+                    client->addChild(art);
                 }
-
-                client->addChild(art);
             }
         }
     }
@@ -1116,7 +1091,7 @@ void LetsStock::on_treeWidget_sell_itemClicked(QTreeWidgetItem *item, int column
         {
             QByteArray data = image.value(0).toByteArray();
             QPixmap *mpixmap = new QPixmap();
-            mpixmap->loadFromData(data,"JPG");
+            mpixmap->loadFromData(data);
             ourLabel *labelImg = new ourLabel(*mpixmap);
             labelImg->setWindowModality(Qt::ApplicationModal);
             labelImg->show();
@@ -1143,27 +1118,31 @@ void LetsStock::on_pushButton_modSell_clicked()
             mod->ui->comboBox_client->setCurrentIndex(mod->clients.indexOf(modifier.value(1).toInt()));
             mod->ui->dateEdit->setDate(QDate::fromString(modifier.value(2).toString(), "yyyyMMdd"));
             mod->ui->label_id->setText(ui->treeWidget_sell->currentItem()->text(5));
+            mod->ui->lineEdit_commentaire->setText(ui->treeWidget_sell->currentItem()->text(2));
 
             QStringList articles = modifier.value(4).toString().split(";");
             QString article;
-            if(modifier.value(4).toString() != "") foreach(article, articles)
+            if(modifier.value(4).toString() != "")
             {
-                int index;
-                int indexTop;
-                QList<QTreeWidgetItem*> clist = mod->ui->treeWidget->findItems(article.split(":").at(1), Qt::MatchRecursive, 8);
-                foreach(QTreeWidgetItem* item, clist)
+                foreach(article, articles)
                 {
-                    indexTop = mod->ui->treeWidget->indexOfTopLevelItem(item->parent());
-                    index = mod->ui->treeWidget->topLevelItem(indexTop)->indexOfChild(item);
+                    int index;
+                    int indexTop;
+                    QList<QTreeWidgetItem*> clist = mod->ui->treeWidget->findItems(article.split(":").at(1), Qt::MatchRecursive, 8);
+                    foreach(QTreeWidgetItem* item, clist)
+                    {
+                        indexTop = mod->ui->treeWidget->indexOfTopLevelItem(item->parent());
+                        index = mod->ui->treeWidget->topLevelItem(indexTop)->indexOfChild(item);
+                    }
+
+                    QSpinBox *spin = qobject_cast<QSpinBox*>(mod->ui->treeWidget->itemWidget(mod->ui->treeWidget->topLevelItem(indexTop)->child(index), 0));
+                    QDoubleSpinBox *doubleSpin = qobject_cast<QDoubleSpinBox*>(mod->ui->treeWidget->itemWidget(mod->ui->treeWidget->topLevelItem(indexTop)->child(index), 6));
+
+                    mod->ui->treeWidget->topLevelItem(indexTop)->child(index)->setText(4, QString::number(mod->ui->treeWidget->topLevelItem(indexTop)->child(index)->text(4).toInt() + article.split(":").at(0).toInt()));
+                    spin->setMaximum(spin->maximum() + article.split(":").at(0).toInt());
+                    spin->setValue(article.split(":").at(0).toInt());
+                    doubleSpin->setValue(article.split(":").at(2).toDouble());
                 }
-
-                QSpinBox *spin = qobject_cast<QSpinBox*>(mod->ui->treeWidget->itemWidget(mod->ui->treeWidget->topLevelItem(indexTop)->child(index), 0));
-                QDoubleSpinBox *doubleSpin = qobject_cast<QDoubleSpinBox*>(mod->ui->treeWidget->itemWidget(mod->ui->treeWidget->topLevelItem(indexTop)->child(index), 6));
-
-                mod->ui->treeWidget->topLevelItem(indexTop)->child(index)->setText(4, QString::number(mod->ui->treeWidget->topLevelItem(indexTop)->child(index)->text(4).toInt() + article.split(":").at(0).toInt()));
-                spin->setMaximum(spin->maximum() + article.split(":").at(0).toInt());
-                spin->setValue(article.split(":").at(0).toInt());
-                doubleSpin->setValue(article.split(":").at(2).toDouble());
             }
 
             if(mod->ui->label_montant->text().replace(" €","").toDouble() != modifier.value(3).toDouble()) mod->ui->doubleSpinBox->setValue(modifier.value(3).toDouble() - mod->ui->label_montant->text().replace(" €","").toDouble());

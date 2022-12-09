@@ -132,8 +132,16 @@ void add_excel::actu()
                     if(rowOff > 300000) rowList.append(xml.split("<xdr:row>").at(1).split("</xdr:row>").at(0).toInt() + 1);
                     else rowList.append(xml.split("<xdr:row>").at(1).split("</xdr:row>").at(0).toInt());
 
-                    idList.append(xml.split("r:embed=\"").at(1).split("\"").at(0));
-                    fileList.append(read.split("\""+idList.last()+"\"").at(1).split("/media/").at(1).split("\"").at(0));
+                    if(xml.contains("r:embed=\""))
+                    {
+                        idList.append(xml.split("r:embed=\"").at(1).split("\"").at(0));
+                        fileList.append(read.split("\""+idList.last()+"\"").at(1).split("/media/").at(1).split("\"").at(0));
+                    }
+                    else
+                    {
+                        xmlList.remove(xmlList.indexOf(xml));
+                        rowList.removeLast();
+                    }
                 }
             }
         }
@@ -272,7 +280,7 @@ void add_excel::on_pushButton_valide_clicked()
                             IMGInByteArray = file.readAll();
 
                             QPixmap *pix = new QPixmap();
-                            pix->loadFromData(IMGInByteArray,"JPG");
+                            pix->loadFromData(IMGInByteArray);
                             QPixmap newPix = pix->scaledToHeight(32);
 
                             QBuffer buffer(&IMGMinInByteArray);
