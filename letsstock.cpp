@@ -243,7 +243,7 @@ void LetsStock::on_pushButton_stock_clicked()
 
         double nbCat_quantite = 0;
         double nbCat_montantAchatStock = 0;
-        QSqlQuery articles("SELECT nom,SUM(quantité),image_min,id_article,SUM(total_achat),SUM(total_vente),montant_achat FROM Articles WHERE categorie='"+cat.value(0).toString()+"' GROUP BY nom ORDER BY nom ASC");
+        QSqlQuery articles("SELECT nom,SUM(quantité),image_min,id_article,SUM(total_achat),SUM(total_vente),montant_achat,id_fournisseur FROM Articles WHERE categorie='"+cat.value(0).toString()+"' GROUP BY nom,id_fournisseur ORDER BY nom ASC");
         while(articles.next())
         {
             QTreeWidgetItem *art = new QTreeWidgetItem();
@@ -257,7 +257,10 @@ void LetsStock::on_pushButton_stock_clicked()
                 iconImg.addPixmap(mpixmap->scaledToHeight(128,Qt::SmoothTransformation));
             }
             art->setIcon(1, iconImg);
-            art->setText(1, articles.value(0).toString());
+
+            QSqlQuery nomVendor("SELECT nom FROM Fournisseur WHERE id_vendor='"+articles.value("id_fournisseur").toString()+"'");
+            if(nomVendor.next()) art->setText(1, articles.value(0).toString()+" ["+nomVendor.value(0).toString()+"]");
+
             art->setText(4, articles.value(3).toString());
 
             art->setText(2, "     "+articles.value(1).toString());
@@ -284,8 +287,8 @@ void LetsStock::on_pushButton_stock_clicked()
             {
                 double montantTotalAchat = 0;
                 double montantTotalVente = 0;
-                if(articles.value(4).toDouble() !=  0) art->setText(7, QString::number(articles.value(4).toDouble(),'f',2)+" €");
-                if(articles.value(5).toDouble() !=  0) art->setText(8, QString::number(articles.value(5).toDouble(),'f',2)+" €");
+                if(articles.value(4).toDouble() !=  0) art->setText(7, tr("%1 €").arg(QString::number(articles.value(4).toDouble(),'f',2)));
+                if(articles.value(5).toDouble() !=  0) art->setText(8, tr("%1 €").arg(QString::number(articles.value(5).toDouble(),'f',2)));
 
                 QSqlQuery commande("SELECT * FROM Commande WHERE articles LIKE '%:"+articles.value(3).toString()+":%'");
                 while(commande.next())
@@ -321,7 +324,7 @@ void LetsStock::on_pushButton_stock_clicked()
                         }
                     }
                 }
-                if(art->text(8) == QString::number(montantTotalVente,'f',2)+" €") art->setForeground(8, Qt::green);
+                if(art->text(8) == tr("%1 €").arg(QString::number(montantTotalVente,'f',2))) art->setForeground(8, Qt::green);
                 else art->setForeground(8, Qt::red);
             }
         }
@@ -414,6 +417,153 @@ void LetsStock::on_treeWidget_stock_itemClicked(QTreeWidgetItem *item, int colum
     }
 
     QApplication::restoreOverrideCursor();
+}
+
+//---------------------- Historique ------------------------//
+
+void LetsStock::on_treeWidget_stock_itemDoubleClicked(QTreeWidgetItem *item, int column)
+{
+    if(item->text(4) != "")
+    {
+        QApplication::setOverrideCursor(Qt::BusyCursor);
+        QApplication::processEvents();
+
+        ui->stackedWidget->setCurrentWidget(ui->historiquePage);
+        ui->treeWidget_histo->clear();
+        ui->label_article->setText(tr("Article : ")+item->text(1));
+        ui->treeWidget_histo->hideColumn(6);
+        ui->treeWidget_histo->hideColumn(7);
+        ui->treeWidget_histo->hideColumn(8);
+
+        QSqlQuery achat("SELECT * FROM Commande WHERE articles LIKE '%:"+item->text(4)+":%' ORDER BY date");
+        while(achat.next())
+        {
+            QTreeWidgetItem *numero = new QTreeWidgetItem();
+
+            if(achat.value(6).toByteArray() != "") numero->setIcon(0, QIcon(":/ressources/images/pdf.png"));
+            numero->setText(0, achat.value(3).toString());
+
+            ui->treeWidget_histo->addTopLevelItem(numero);
+
+            QSqlQuery nomVendor("SELECT nom FROM Fournisseur WHERE id_vendor='"+achat.value(1).toString()+"'");
+            if(nomVendor.next())
+            {
+                numero->setText(3, locale().toString(QDate::fromString(achat.value(2).toString(),"yyyyMMdd"),"ddd dd MMM yyyy"));
+                numero->setText(8, locale().toString(QDate::fromString(achat.value(2).toString(),"yyyyMMdd"),"yyyyMMdd"));
+
+                numero->setText(4, nomVendor.value(0).toString());
+                numero->setText(5, QString::number(achat.value(5).toDouble(),'f',2)+" €");
+                numero->setForeground(5, QColor(Qt::red));
+                numero->setText(6, achat.value(0).toString());
+
+                QStringList articles = achat.value(4).toString().split(";");
+                QString article;
+                if(achat.value(4).toString() != "")
+                {
+                    foreach(article, articles)
+                    {
+                        QTreeWidgetItem *art = new QTreeWidgetItem();
+
+                        if(article.split(":").at(1) == item->text(4)) art->setIcon(0, QIcon(":/ressources/images/exclamation.png"));
+
+                        art->setText(1, article.split(":").at(0));
+                        art->setText(7, article.split(":").at(1));
+                        QSqlQuery nomArticle("SELECT nom,image_min FROM Articles WHERE id_article='"+article.split(":").at(1)+"'");
+                        if(nomArticle.next())
+                        {
+                            QIcon iconImg;
+                            if(!nomArticle.value(1).toByteArray().isNull())
+                            {
+                                QByteArray data = nomArticle.value(1).toByteArray();
+                                QPixmap *mpixmap = new QPixmap();
+                                mpixmap->loadFromData(data);
+                                iconImg.addPixmap(*mpixmap);
+                            }
+                            art->setIcon(2, iconImg);
+                            art->setText(2, nomArticle.value(0).toString());
+                        }
+
+                        numero->addChild(art);
+                    }
+                }
+            }
+        }
+
+        QSqlQuery vente("SELECT * FROM Vente WHERE articles LIKE '%:"+item->text(4)+":%' ORDER BY date");
+        while(vente.next())
+        {
+            QTreeWidgetItem *client = new QTreeWidgetItem();
+
+            QSqlQuery nomClient("SELECT nom,prenom FROM Client WHERE id_client='"+vente.value(1).toString()+"'");
+            if(nomClient.next())
+            {
+                client->setText(0, nomClient.value(0).toString()+" "+nomClient.value(1).toString());
+                ui->treeWidget_histo->addTopLevelItem(client);
+
+                client->setText(3, locale().toString(QDate::fromString(vente.value(2).toString(),"yyyyMMdd"),"ddd dd MMM yyyy"));
+                client->setText(8, locale().toString(QDate::fromString(vente.value(2).toString(),"yyyyMMdd"),"yyyyMMdd"));
+
+                client->setText(5, QString::number(vente.value(3).toDouble(),'f',2)+" €");
+                client->setForeground(5, QColor(Qt::darkGreen));
+                client->setText(6, vente.value(0).toString());
+
+                client->setText(2, vente.value("commentaire").toString());
+                client->setTextAlignment(2, Qt::AlignCenter);
+
+                QStringList articles = vente.value(4).toString().split(";");
+                QString article;
+                if(vente.value(4).toString() != "")
+                {
+                    foreach(article, articles)
+                    {
+                        QTreeWidgetItem *art = new QTreeWidgetItem();
+
+                        if(article.split(":").at(1) == item->text(4)) art->setIcon(0, QIcon(":/ressources/images/exclamation.png"));
+
+                        art->setText(1, article.split(":").at(0));
+                        art->setText(5, tr("       %1 €").arg(QString::number(article.split(":").at(0).toDouble() * article.split(":").at(2).toDouble(),'f',2)));
+                        art->setText(7, article.split(":").at(1));
+
+                        QSqlQuery nomArticle("SELECT nom,id_fournisseur,image_min FROM Articles WHERE id_article='"+article.split(":").at(1)+"'");
+                        if(nomArticle.next())
+                        {
+                            QIcon iconImg;
+                            if(!nomArticle.value(2).toByteArray().isNull())
+                            {
+                                QByteArray data = nomArticle.value(2).toByteArray();
+                                QPixmap *mpixmap = new QPixmap();
+                                mpixmap->loadFromData(data);
+                                iconImg.addPixmap(*mpixmap);
+                            }
+                            art->setIcon(2, iconImg);
+
+                            QSqlQuery nomVendor("SELECT nom FROM Fournisseur WHERE id_vendor='"+nomArticle.value(1).toString()+"'");
+                            if(nomVendor.next()) art->setText(2, nomArticle.value(0).toString()+" ["+nomVendor.value(0).toString()+"]");
+
+                            art->setText(6, vente.value(0).toString());
+                        }
+
+
+                        client->addChild(art);
+                    }
+                }
+            }
+        }
+
+        ui->treeWidget_histo->expandAll();
+        for(int i = 0; i < ui->treeWidget_histo->columnCount(); i++)
+            ui->treeWidget_histo->resizeColumnToContents(i);
+        ui->treeWidget_histo->collapseAll();
+
+        ui->treeWidget_histo->sortItems(8, Qt::AscendingOrder);
+
+        QApplication::restoreOverrideCursor();
+    }
+}
+
+void LetsStock::on_pushButton_back_2_clicked()
+{
+    ui->stackedWidget->setCurrentWidget(ui->stockPage);
 }
 
 //---------------------- Statistiques ------------------------//
@@ -977,7 +1127,9 @@ void LetsStock::actu_sell()
             client->setText(3, QDate::fromString(affichage.value(2).toString(),"yyyyMMdd").toString("ddd dd MMM yyyy"));
             client->setText(4, QString::number(affichage.value(3).toDouble(),'f',2)+" €");
             client->setText(5, affichage.value(0).toString());
-            client->setText(2, affichage.value(5).toString());
+
+            client->setText(2, affichage.value("commentaire").toString());
+            client->setTextAlignment(2, Qt::AlignCenter);
 
             QStringList articles = affichage.value(4).toString().split(";");
             QString article;
@@ -988,7 +1140,7 @@ void LetsStock::actu_sell()
                     QTreeWidgetItem *art = new QTreeWidgetItem();
 
                     art->setText(1, article.split(":").at(0));
-                    art->setText(4, "       "+QString::number(article.split(":").at(0).toDouble() * article.split(":").at(2).toDouble(),'f',2)+" €");
+                    art->setText(4, tr("       %1 €").arg(QString::number(article.split(":").at(0).toDouble() * article.split(":").at(2).toDouble(),'f',2)));
                     art->setText(6, article.split(":").at(1));
 
                     QSqlQuery nomArticle("SELECT nom,id_fournisseur,image_min FROM Articles WHERE id_article='"+article.split(":").at(1)+"'");

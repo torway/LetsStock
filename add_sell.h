@@ -46,6 +46,8 @@ private slots:
 
     void on_comboBox_client_currentTextChanged(const QString &arg1);
 
+    void on_pushButton_clicked();
+
 public slots:
     void actu_montant();
     void actu_articles();

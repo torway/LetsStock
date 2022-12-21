@@ -336,3 +336,9 @@ void add_order::on_pushButton_delImg_clicked()
     PDFInByteArray.clear();
     ui->lineEdit_path->clear();
 }
+
+void add_order::on_pushButton_clicked()
+{
+    ui->dateEdit->setDate(QDate::currentDate());
+}
+

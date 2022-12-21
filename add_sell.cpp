@@ -152,6 +152,8 @@ void add_sell::actu_articles()
         if(i != 3) ui->treeWidget->setColumnWidth(i, ui->treeWidget->columnWidth(i)*1.2);
     }
 
+    ui->treeWidget->collapseAll();
+
     QApplication::restoreOverrideCursor();
 }
 
@@ -360,3 +362,9 @@ void add_sell::on_comboBox_client_currentTextChanged(const QString &arg1)
         if(arg1.startsWith("PERSO")) persoBefore = true;
     }
 }
+
+void add_sell::on_pushButton_clicked()
+{
+    ui->dateEdit->setDate(QDate::currentDate());
+}
+

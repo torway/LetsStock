@@ -8,5 +8,6 @@
         <file>ressources/images/pdf.png</file>
         <file>ressources/images/edit_dark.png</file>
         <file>ressources/images/edit_light.png</file>
+        <file>ressources/images/exclamation.png</file>
     </qresource>
 </RCC>

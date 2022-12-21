@@ -84,19 +84,6 @@ border: none;
      </property>
     </widget>
    </item>
-   <item row="2" column="20">
-    <widget class="QLabel" name="label_2">
-     <property name="styleSheet">
-      <string notr="true">color:rgb(0,0,0);</string>
-     </property>
-     <property name="text">
-      <string>Date :</string>
-     </property>
-     <property name="alignment">
-      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
-     </property>
-    </widget>
-   </item>
    <item row="3" column="1" rowspan="2" colspan="21">
     <widget class="QTreeWidget" name="treeWidget">
      <property name="minimumSize">
@@ -211,16 +198,6 @@ border-right: 1px solid black;
       </size>
      </property>
     </spacer>
-   </item>
-   <item row="2" column="21">
-    <widget class="QDateEdit" name="dateEdit">
-     <property name="minimumSize">
-      <size>
-       <width>114</width>
-       <height>0</height>
-      </size>
-     </property>
-    </widget>
    </item>
    <item row="2" column="4">
     <widget class="QPushButton" name="pushButton_addClient">
@@ -396,6 +373,36 @@ border-right: 1px solid black;
    </item>
    <item row="5" column="20" colspan="2">
     <widget class="QLineEdit" name="lineEdit_commentaire"/>
+   </item>
+   <item row="2" column="19">
+    <widget class="QLabel" name="label_2">
+     <property name="styleSheet">
+      <string notr="true">color:rgb(0,0,0);</string>
+     </property>
+     <property name="text">
+      <string>Date :</string>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="20">
+    <widget class="QDateEdit" name="dateEdit">
+     <property name="minimumSize">
+      <size>
+       <width>114</width>
+       <height>0</height>
+      </size>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="21">
+    <widget class="QPushButton" name="pushButton">
+     <property name="text">
+      <string>Auj.</string>
+     </property>
+    </widget>
    </item>
   </layout>
  </widget>

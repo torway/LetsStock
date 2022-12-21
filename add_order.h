@@ -40,6 +40,8 @@ private slots:
     void on_pushButton_addImg_clicked();
     void on_pushButton_delImg_clicked();
 
+    void on_pushButton_clicked();
+
 public slots:
     void actu_montant();
 };

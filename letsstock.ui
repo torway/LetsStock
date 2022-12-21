@@ -72,7 +72,7 @@ border: none;
           <number>1</number>
          </property>
          <property name="currentIndex">
-          <number>5</number>
+          <number>2</number>
          </property>
          <widget class="QWidget" name="dashboardPage">
           <layout class="QGridLayout" name="gridLayout_16">
@@ -155,7 +155,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-	border: 3px solid rgb(123, 97, 170);
+	border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
     width:60px;
@@ -233,7 +233,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
     width:60px;
@@ -311,7 +311,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -356,6 +356,18 @@ border: none;
              </property>
             </widget>
            </item>
+           <item row="3" column="0" colspan="2">
+            <widget class="QCheckBox" name="checkBox_checkValue">
+             <property name="styleSheet">
+              <string notr="true">QCheckBox {
+	color: rgb(0, 0, 0);
+}</string>
+             </property>
+             <property name="text">
+              <string>Afficher plus d'informations</string>
+             </property>
+            </widget>
+           </item>
            <item row="4" column="0" colspan="2">
             <widget class="QTreeWidget" name="treeWidget_stock">
              <property name="styleSheet">
@@ -371,16 +383,172 @@ border: none;
              </column>
             </widget>
            </item>
-           <item row="3" column="0" colspan="2">
-            <widget class="QCheckBox" name="checkBox_checkValue">
+          </layout>
+         </widget>
+         <widget class="QWidget" name="historiquePage">
+          <layout class="QGridLayout" name="gridLayout_20">
+           <property name="leftMargin">
+            <number>50</number>
+           </property>
+           <property name="topMargin">
+            <number>50</number>
+           </property>
+           <property name="rightMargin">
+            <number>50</number>
+           </property>
+           <property name="bottomMargin">
+            <number>50</number>
+           </property>
+           <item row="0" column="0">
+            <widget class="QPushButton" name="pushButton_back_2">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>60</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>60</width>
+               <height>16777215</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>14</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="cursor">
+              <cursorShape>PointingHandCursor</cursorShape>
+             </property>
              <property name="styleSheet">
-              <string notr="true">QCheckBox {
-	color: rgb(0, 0, 0);
+              <string notr="true">QPushButton {
+	color: rgb(0,0,0);
+    border: 2px solid rgb(123, 97, 170);
+	background-color: rgba(217, 205, 255, 129);
+    border-radius: 10px;
+    width:60px;
 }</string>
              </property>
              <property name="text">
-              <string>Afficher plus d'informations</string>
+              <string>←</string>
              </property>
+             <property name="iconSize">
+              <size>
+               <width>32</width>
+               <height>32</height>
+              </size>
+             </property>
+             <property name="flat">
+              <bool>true</bool>
+             </property>
+            </widget>
+           </item>
+           <item row="0" column="1">
+            <widget class="QLabel" name="label_14">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>100</height>
+              </size>
+             </property>
+             <property name="font">
+              <font>
+               <pointsize>23</pointsize>
+               <bold>true</bold>
+              </font>
+             </property>
+             <property name="styleSheet">
+              <string notr="true">color: rgb(0, 0, 0);</string>
+             </property>
+             <property name="text">
+              <string>Historique             </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="1" column="0" colspan="2">
+            <widget class="QLabel" name="label_article">
+             <property name="styleSheet">
+              <string notr="true">QLabel {
+color: rgb(0,0,0);
+}</string>
+             </property>
+             <property name="text">
+              <string>Article : </string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+           <item row="2" column="0" colspan="2">
+            <widget class="QTreeWidget" name="treeWidget_histo">
+             <property name="styleSheet">
+              <string notr="true">#treeWidget_histo {
+    border: 3px solid rgb(123, 97, 170);
+    border-radius: 3px;
+}</string>
+             </property>
+             <property name="columnCount">
+              <number>10</number>
+             </property>
+             <attribute name="headerVisible">
+              <bool>false</bool>
+             </attribute>
+             <column>
+              <property name="text">
+               <string notr="true">1</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">2</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">3</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">4</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">5</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">6</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">7</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">8</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">9</string>
+              </property>
+             </column>
+             <column>
+              <property name="text">
+               <string notr="true">10</string>
+              </property>
+             </column>
             </widget>
            </item>
           </layout>
@@ -425,7 +593,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -528,7 +696,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -574,7 +742,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -604,7 +772,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -693,7 +861,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_2 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -773,7 +941,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_3 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -843,7 +1011,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_4 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -923,7 +1091,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -982,7 +1150,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -1049,7 +1217,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_5 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -1119,7 +1287,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_6 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -1199,7 +1367,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -1258,7 +1426,7 @@ border: none;
              <property name="styleSheet">
               <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -1322,7 +1490,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_7 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -1395,7 +1563,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_9 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -1450,9 +1618,8 @@ border: none;
                    </property>
                    <property name="styleSheet">
                     <string notr="true">#comboBox_clientSell {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
-    border-radius: 30px;
 	color: rgb(0, 0, 0);
 }</string>
                    </property>
@@ -1474,7 +1641,7 @@ border: none;
              </property>
              <property name="styleSheet">
               <string notr="true">#frame_8 {
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 30px;
 }</string>
@@ -1580,7 +1747,7 @@ border: none;
                <property name="styleSheet">
                 <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -1639,7 +1806,7 @@ border: none;
                <property name="styleSheet">
                 <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;
@@ -1698,7 +1865,7 @@ border: none;
                <property name="styleSheet">
                 <string notr="true">QPushButton {
 	color: rgb(0,0,0);
-    border: 3px solid rgb(123, 97, 170);
+    border: 2px solid rgb(123, 97, 170);
 	background-color: rgba(217, 205, 255, 129);
     border-radius: 10px;
     width:60px;

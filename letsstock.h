@@ -79,6 +79,9 @@ private slots:
 
     void on_actionUpdate_triggered();
 
+    void on_treeWidget_stock_itemDoubleClicked(QTreeWidgetItem *item, int column);
+    void on_pushButton_back_2_clicked();
+
 private:
     QSqlDatabase appDatabase;
     QList<int> clients;
